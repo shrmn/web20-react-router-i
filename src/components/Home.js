@@ -1,6 +1,10 @@
 import React from "react";
 
-function Home() {
+function Home(props) {
+  const routeToShop = event => {
+    event.preventDefault();
+    props.history.push("/item-list");
+  };
   return (
     <div className="home-wrapper">
       <img
@@ -8,7 +12,14 @@ function Home() {
         src="https://www.uncommongoods.com/images/category/fun-fullwidth.jpg"
         alt=""
       />
-      <button className="md-button shop-button">Shop now!</button>
+      <button onClick={routeToShop} className="md-button shop-button">
+        Shop now!
+      </button>
+      <div>
+        {props.doggos.map(doggo => (
+          <img width="200" src={doggo} key={doggo} alt={doggo} />
+        ))}
+      </div>
     </div>
   );
 }

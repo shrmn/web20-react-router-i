@@ -1,12 +1,10 @@
 import React from "react";
 import { Link } from "react-router-dom";
 
-import items from "../data";
-
-function ItemList() {
+function ItemList(props) {
   return (
     <div className="items-list-wrapper">
-      {items.map(item => (
+      {props.items.map(item => (
         <div className="item-card" key={item.id}>
           <img
             className="item-list-image"

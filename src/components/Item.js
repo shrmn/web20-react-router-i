@@ -1,9 +1,11 @@
 import React from "react";
+import { Route, NavLink } from "react-router-dom";
 
-import items from "../data";
+import ItemDescription from "./ItemDescription";
+import ItemShipping from "./ItemShipping";
 
 function Item(props) {
-  const item = items.find(thing => {
+  const item = props.items.find(thing => {
     console.log(thing.id, props.match.params.id);
     return `${thing.id}` === props.match.params.id;
   });
@@ -18,7 +20,23 @@ function Item(props) {
           <h4>${item.price}</h4>
         </div>
       </div>
-      <p className="item-description">{item.description}</p>
+      <nav className="item-sub-nav">
+        <NavLink exact to={`/item-list/${item.id}`}>
+          Story
+        </NavLink>
+        <NavLink to={`/item-list/${item.id}/shipping`}>Shipping</NavLink>
+      </nav>
+      <div>
+        <Route
+          exact
+          path="/item-list/:id"
+          render={props => <ItemDescription {...props} item={item} />}
+        />
+        <Route
+          path="/item-list/:id/shipping"
+          render={props => <ItemShipping {...props} item={item} />}
+        />
+      </div>
     </div>
   );
 }
