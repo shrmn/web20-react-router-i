@@ -1,37 +1,46 @@
 import React from "react";
-import { Route, Link } from "react-router-dom";
+import { Route, NavLink, withRouter } from "react-router-dom";
 import axios from "axios";
 
 import Home from "./components/Home";
 import ItemList from "./components/ItemList";
 import Item from "./components/Item";
+import ItemForm from "./components/ItemForm";
 
-import items from "./data";
+// import items from "./data";
 
 import "./App.css";
 
 class App extends React.Component {
   state = {
-    items: items,
+    items: [],
     doggos: []
   };
 
   componentDidMount() {
-    fetch("https://dog.ceo/api/breed/husky/images")
-      .then(res => res.json())
-      .then(dogs => {
-        console.log("dogs: ", dogs);
-        this.setState({ doggos: dogs.message });
+    axios
+      .get("http://localhost:3333/items")
+      .then(res => {
+        console.log(res);
+        return this.setState({ items: res.data });
       })
-      .catch(err => console.log("noooo"));
-    // axios
-    //   .get("https://dog.ceo/api/breed/husky/images")
-    //   .then(res => {
-    //     console.log(res);
-    //     this.setState({ doggos: res.data.message });
-    //   })
-    //   .catch(err => console.log("error: ", err));
+      .catch(error => console.log("Fetch Error: ", error));
   }
+
+  addItem = (e, item) => {
+    e.preventDefault();
+    axios
+      .post("http://localhost:3333/items", item)
+      .then(res => {
+        this.setState({
+          items: res.data
+        });
+        this.props.history.push("/item-list");
+      })
+      .catch(err => {
+        console.log("POST err: ", err);
+      });
+  };
 
   render() {
     return (
@@ -39,10 +48,11 @@ class App extends React.Component {
         <nav>
           <h1 className="store-header">Adam's Trinkets</h1>
           <div className="nav-links">
-            <Link exact to="/">
+            <NavLink exact to="/">
               Home
-            </Link>
-            <Link to="/item-list">Shop</Link>
+            </NavLink>
+            <NavLink to="/item-list">Shop</NavLink>
+            <NavLink to="/item-form">Add Item</NavLink>
           </div>
         </nav>
         <Route
@@ -67,9 +77,14 @@ class App extends React.Component {
           path="/item-list/:id"
           render={props => <Item {...props} items={this.state.items} />}
         />
+        <Route
+          path="/item-form"
+          render={props => <ItemForm {...props} addItem={this.addItem} />}
+        />
       </div>
     );
   }
 }
 
-export default App;
+const AppWithRouter = withRouter(App);
+export default AppWithRouter;
