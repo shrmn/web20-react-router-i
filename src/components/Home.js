@@ -15,11 +15,6 @@ function Home(props) {
       <button onClick={routeToShop} className="md-button shop-button">
         Shop now!
       </button>
-      <div>
-        {props.doggos.map(doggo => (
-          <img width="200" src={doggo} key={doggo} alt={doggo} />
-        ))}
-      </div>
     </div>
   );
 }

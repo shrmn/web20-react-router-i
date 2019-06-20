@@ -22,7 +22,11 @@ class ItemForm extends React.Component {
   };
 
   handleSubmit = e => {
-    this.props.addItem(e, this.state.item);
+    if (this.props.activeItem) {
+      this.props.updateItem(e, this.state.item);
+    } else {
+      this.props.addItem(e, this.state.item);
+    }
     this.setState({
       item: {
         name: "",
@@ -37,7 +41,7 @@ class ItemForm extends React.Component {
   render() {
     return (
       <div>
-        <h2>Add New Item</h2>
+        <h2>{`${this.props.activeItem ? "Update" : "Add New"} Item`}</h2>
         <form onSubmit={this.handleSubmit}>
           <input
             type="text"
@@ -46,6 +50,8 @@ class ItemForm extends React.Component {
             placeholder="name"
             value={this.state.item.name}
           />
+          <div className="baseline" />
+
           <input
             type="text"
             name="price"
@@ -53,6 +59,8 @@ class ItemForm extends React.Component {
             placeholder="price"
             value={this.state.item.price}
           />
+          <div className="baseline" />
+
           <input
             type="text"
             name="imageUrl"
@@ -60,6 +68,8 @@ class ItemForm extends React.Component {
             placeholder="imageUrl"
             value={this.state.item.imageUrl}
           />
+          <div className="baseline" />
+
           <input
             type="text"
             name="description"
@@ -67,6 +77,8 @@ class ItemForm extends React.Component {
             placeholder="description"
             value={this.state.item.description}
           />
+          <div className="baseline" />
+
           <input
             type="text"
             name="shipping"
@@ -74,8 +86,10 @@ class ItemForm extends React.Component {
             placeholder="shipping"
             value={this.state.item.shipping}
           />
+          <div className="baseline" />
+
           <button className="md-button form-button" onClick={this.handleSubmit}>
-            Add New Item
+            {`${this.props.activeItem ? "Update" : "Add New"} Item`}
           </button>
         </form>
       </div>

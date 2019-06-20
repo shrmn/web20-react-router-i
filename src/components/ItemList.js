@@ -1,19 +1,25 @@
 import React from "react";
-import { Link } from "react-router-dom";
 
 function ItemList(props) {
+  function routeToItem(e, item) {
+    e.preventDefault();
+    props.history.push(`item-list/${item.id}`);
+    props.getItemById(item.id);
+  }
   return (
     <div className="items-list-wrapper">
       {props.items.map(item => (
-        <div className="item-card" key={item.id}>
+        <div
+          onClick={e => routeToItem(e, item)}
+          className="item-card"
+          key={item.id}
+        >
           <img
             className="item-list-image"
             src={item.imageUrl}
             alt={item.name}
           />
-          <Link to={`/item-list/${item.id}`}>
-            <p>{item.name}</p>
-          </Link>
+          <p>{item.name}</p>
           <p>${item.price}</p>
         </div>
       ))}

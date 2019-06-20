@@ -4,11 +4,16 @@ import { Route, NavLink } from "react-router-dom";
 import ItemDescription from "./ItemDescription";
 import ItemShipping from "./ItemShipping";
 
-function Item(props) {
-  const item = props.items.find(thing => {
-    console.log(thing.id, props.match.params.id);
-    return `${thing.id}` === props.match.params.id;
-  });
+function Item({ item, history, updateItem, deleteItem }) {
+  // const item = props.items.find(thing => {
+  //   console.log(thing.id, props.match.params.id);
+  //   return `${thing.id}` === props.match.params.id;
+  // });
+
+  if (!item) {
+    return <h2>Item data loading...</h2>;
+  }
+
   return (
     <div className="item-wrapper">
       <div className="item-header">
@@ -36,6 +41,25 @@ function Item(props) {
           path="/item-list/:id/shipping"
           render={props => <ItemShipping {...props} item={item} />}
         />
+      </div>
+      <div>
+        <button
+          onClick={event => {
+            updateItem(event, item);
+            history.push("/item-form");
+          }}
+          className="md-button"
+        >
+          Update Item
+        </button>
+        <button
+          onClick={event => {
+            deleteItem(event, item);
+          }}
+          className="md-button"
+        >
+          Delete Item
+        </button>
       </div>
     </div>
   );

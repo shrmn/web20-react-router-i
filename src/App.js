@@ -11,10 +11,19 @@ import ItemForm from "./components/ItemForm";
 
 import "./App.css";
 
+const blankItem = {
+  name: "",
+  description: "",
+  imageUrl: "",
+  shipping: "",
+  price: ""
+};
+
 class App extends React.Component {
   state = {
     items: [],
-    doggos: []
+    activeItem: null,
+    editingId: null
   };
 
   componentDidMount() {
@@ -26,6 +35,13 @@ class App extends React.Component {
       })
       .catch(error => console.log("Fetch Error: ", error));
   }
+
+  getItemById = id => {
+    axios
+      .get(`http://localhost:3333/itemById/${id}`)
+      .then(res => this.setState({ activeItem: res.data }))
+      .catch(err => console.log(err));
+  };
 
   addItem = (e, item) => {
     e.preventDefault();
@@ -42,6 +58,37 @@ class App extends React.Component {
       });
   };
 
+  updateItem = (e, item) => {
+    e.preventDefault();
+    axios
+      .put(`http://localhost:3333/items/${this.state.editingId}`, item)
+      .then(response =>
+        this.setState({
+          items: response.data,
+          editingId: null,
+          isEditing: false,
+          item: blankItem
+        }).then(this.props.history.push(`/item-list/${item.id}`))
+      );
+  };
+
+  deleteItem = (e, item) => {
+    e.preventDefault();
+    axios
+      .delete(`http://localhost:3333/items/${item.id}`)
+      .then(res => this.setState({ items: res.data }))
+      .then(this.props.history.push("/item-list"));
+  };
+
+  setUpUpdateForm = (e, item) => {
+    e.preventDefault();
+    this.setState({
+      isediting: true,
+      editingId: item.id,
+      item
+    });
+  };
+
   render() {
     return (
       <div className="App">
@@ -52,14 +99,12 @@ class App extends React.Component {
               Home
             </NavLink>
             <NavLink to="/item-list">Shop</NavLink>
-            <NavLink to="/item-form">Add Item</NavLink>
+            <NavLink to="/item-form">{`${
+              this.props.activeItem ? "Update" : "Add New"
+            } Item`}</NavLink>
           </div>
         </nav>
-        <Route
-          exact
-          path="/"
-          render={props => <Home {...props} doggos={this.state.doggos} />}
-        />
+        <Route exact path="/" render={props => <Home {...props} />} />
         <Route
           exact
           path="/item-list"
@@ -70,16 +115,31 @@ class App extends React.Component {
               // history={props.history}
               // location={props.location}
               items={this.state.items}
+              getItemById={this.getItemById}
             />
           )}
         />
         <Route
           path="/item-list/:id"
-          render={props => <Item {...props} items={this.state.items} />}
+          render={props => (
+            <Item
+              {...props}
+              deleteItem={this.deleteItem}
+              updateItem={this.setUpUpdateForm}
+              item={this.state.activeItem}
+            />
+          )}
         />
         <Route
           path="/item-form"
-          render={props => <ItemForm {...props} addItem={this.addItem} />}
+          render={props => (
+            <ItemForm
+              {...props}
+              updateItem={this.updateItem}
+              addItem={this.addItem}
+              activeItem={this.state.activeItem}
+            />
+          )}
         />
       </div>
     );
